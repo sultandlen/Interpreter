@@ -1,5 +1,9 @@
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
+
+FILE* fp;
+
 typedef enum {
    IDENTIFIER,
    INT_CONST,
@@ -25,3 +29,31 @@ bool isKeyword (char str[]) {
   return false;
 }
 
+Token getNextToken() {
+    Token result;
+    return result;
+}
+
+int main(int argc, char *argv[]) {
+    char* file = "myprog.tj";
+    if(argc > 1) {
+        file = argv[1];
+    }
+
+    fp = fopen(file, "r");
+
+    if(fp == NULL) {
+        printf("Cannot open file: %s\n", file);
+        return 1;
+    }
+
+    Token token;
+    char c = fgetc(fp);
+    while (c != EOF){
+        ungetc(c, fp);
+        token = getNextToken();
+        printf("%s\n", token.lexeme);
+        printf("%d\n", token.type);
+        c = fgetc(fp);
+    }
+}
