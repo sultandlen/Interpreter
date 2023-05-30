@@ -43,6 +43,8 @@ bool isOperator (char str[]) {
 
 Token getNextToken() {
     Token result;
+    char ch = fgetc(fp);
+
 
     //SKIP WHITESPACE
 
