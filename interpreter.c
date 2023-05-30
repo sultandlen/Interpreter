@@ -76,7 +76,7 @@ bool isOperator (char ch) {
     if ('=' == nextCh) {
       return true;
     }
-    raiseError("':' should continue with '='");
+    raiseError("Invalid operator, assignment operator must be used like ':='");
   }
   return false;
 }
