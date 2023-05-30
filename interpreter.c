@@ -18,6 +18,7 @@ typedef struct {
     TokenType type;
     char lexeme[];
 } Token;
+
 bool isKeyword (char str[]) {
   const char* KEYWORDS[] = {"new", "int", "text", "size", "subs", "locate", "insert", "override", "read", "write",
                            "from", "to", "input", "output", "asText", "asString"};
@@ -31,6 +32,31 @@ bool isKeyword (char str[]) {
 
 Token getNextToken() {
     Token result;
+
+    //SKIP WHITESPACE
+
+
+    //SKIP COMMENT
+
+
+    //IDENTIFIER
+
+
+    //INTEGER
+
+
+    //OPERATOR
+
+
+    //STRING
+
+
+    //KEYWORD
+
+
+    //ENDOFLINE
+
+
     return result;
 }
 
