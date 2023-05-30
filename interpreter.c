@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#define MAX_IDENT_LENGTH  30
+
 FILE* fp;
 
 typedef enum {
@@ -85,7 +87,25 @@ Token getNextToken() {
 
 
   //IDENTIFIER
-
+  if (isalpha(ch)) { // Starts with letter
+    int j = 0;
+    while ((isalnum(ch) || ch == '_')) {
+      token.lexeme[j++] = ch;
+      if(j > MAX_IDENT_LENGTH) {
+        char errMessage[56];
+        sprintf(errMessage, "Identifiers must be smaller or equal than %d characters!", MAX_IDENT_LENGTH);
+        raiseError(errMessage);
+      }
+      ch = fgetc(fp);
+    }
+    ungetc(ch, fp);
+    token.lexeme[j] = '\0'; //null terminator, marks the end of a string
+    token.type = IDENTIFIER;
+    if(isKeyword(token.lexeme)){
+      token.type = OPERATOR;
+    }
+    return token;
+  }
 
   //INTEGER
 
@@ -94,9 +114,6 @@ Token getNextToken() {
 
 
   //STRING
-
-
-  //KEYWORD
 
 
   //ENDOFLINE
