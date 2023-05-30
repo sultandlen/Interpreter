@@ -67,18 +67,18 @@ bool isKeyword (char str[]) {
   return false;
 }
 
-bool isOperator (char ch) {
-  if ('+' == ch || '-' == ch) {
-    return true;
+char isOperator (char ch) {
+  if (ch == '+' || ch == '-') {
+    return ch;
   }
-  if (':' == ch) {
+  if (ch == ':') {
     char nextCh = fgetc(fp);
-    if ('=' == nextCh) {
-      return true;
+    if (nextCh == '=') {
+      return '=';
     }
     raiseError("Invalid operator, assignment operator must be used like ':='");
   }
-  return false;
+  return '\0';
 }
 
 
@@ -122,7 +122,12 @@ Token getNextToken() {
 
 
   //OPERATOR
-
+  char operator = isOperator(ch);
+  if (operator != '\0') {
+    token.type = OPERATOR;
+    token.lexeme[0] = operator;
+    token.lexeme[1] = '\0';
+  }
 
   //STRING
 
@@ -156,8 +161,8 @@ int main(int argc, char *argv[]) {
   while (c != EOF){
     ungetc(c, fp);
     token = getNextToken();
-    printf("%s ", token.lexeme);
-    printf("%d\n", token.type);
+    printf("lexeme: %s ", token.lexeme);
+    printf("type: %d\n", token.type);
     c = fgetc(fp);
   }
 }
