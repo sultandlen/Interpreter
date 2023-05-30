@@ -29,28 +29,31 @@ void raiseError(char* message) {
   exit(1);
 }
 
-void skipWhitespace(char ch) {
+char skipWhitespace(char ch) {
   while (isspace(ch)) {
     ch = fgetc(fp);
   }
+  return ch;
 }
 
-void skipComment(char ch) {
+char skipComment(char ch) {
   if (ch == '/') {
-    char c = fgetc(fp);
+    ch = fgetc(fp);
     char nextc;
-    if (c == '*') {
+    if (ch == '*') {
       do {
         if (nextc == EOF) {
           raiseError("Comment cannot terminated!");
         }
-        c = nextc;
+        ch = nextc;
         nextc = fgetc(fp);
-      } while (!(c == '*' && nextc == '/'));
+      } while (!(ch == '*' && nextc == '/'));
+      return fgetc(fp);
     } else {
-      ungetc(c, fp);
+      raiseError("Unrecognized character: '/'");
     }
   }
+  return ch;
 }
 
 bool isKeyword (char str[]) {
@@ -85,7 +88,14 @@ Token getNextToken() {
 
 
   //SKIP WHITESPACE and COMMENT
-
+  while(isspace(ch) || ch == '/') {
+    ch = skipComment(ch);
+    ch = skipWhitespace(ch);
+    if (ch == EOF) {
+      token.type = ENDOFFILE;
+      token.lexeme[0] = '\0';
+    }
+  }
 
   //IDENTIFIER
   if (isalpha(ch)) { // Starts with letter
