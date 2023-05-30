@@ -26,6 +26,24 @@ void raiseError(char* message) {
   exit(1);
 }
 
+void skipComment(char ch) {
+  if (ch == '/') {
+    char c = fgetc(fp);
+    char nextc;
+    if (c == '*') {
+      do {
+        if (nextc == EOF) {
+          raiseError("Comment cannot terminated!");
+        }
+        c = nextc;
+        nextc = fgetc(fp);
+      } while (!(c == '*' && nextc == '/'));
+    } else {
+      ungetc(c, fp);
+    }
+  }
+}
+
 bool isKeyword (char str[]) {
   const char* KEYWORDS[] = {"new", "int", "text", "size", "subs", "locate", "insert", "override", "read", "write",
                            "from", "to", "input", "output", "asText", "asString"};
@@ -52,9 +70,8 @@ bool isOperator (char ch) {
 }
 
 
-
 Token getNextToken() {
-  Token result;
+  Token token;
   char ch = fgetc(fp);
 
 
@@ -84,7 +101,7 @@ Token getNextToken() {
   //ENDOFLINE
 
 
-  return result;
+  return token;
 }
 
 int main(int argc, char *argv[]) {
