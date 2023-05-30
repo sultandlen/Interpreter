@@ -100,9 +100,9 @@ Token getNextToken() {
 
   //ENDOFLINE
   if (ch == ';') {
-    result.type = ENDOFLINE;
-    strcpy(result.lexeme, "");
-    return result;
+    token.type = ENDOFLINE;
+    strcpy(token.lexeme, "");
+    return token;
   }
 
 
