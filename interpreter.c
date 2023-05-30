@@ -46,7 +46,7 @@ bool isOperator (char ch) {
     if ('=' == nextCh) {
       return true;
     }
-    raiseError("")
+    raiseError("':' should continue with '='");
   }
   return false;
 }
