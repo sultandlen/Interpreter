@@ -20,7 +20,7 @@ typedef enum {
 
 typedef struct {
   TokenType type;
-  char lexeme[];
+  char lexeme[32];
 } Token;
 
 void raiseError(char* message) {
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
   while (c != EOF){
     ungetc(c, fp);
     token = getNextToken();
-    printf("%s\n", token.lexeme);
+    printf("%s ", token.lexeme);
     printf("%d\n", token.type);
     c = fgetc(fp);
   }
