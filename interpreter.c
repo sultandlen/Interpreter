@@ -7,7 +7,6 @@
 #define MAX_IDENT_LENGTH  30
 
 FILE* fp;
-
 typedef enum {
   IDENTIFIER,
   INT_CONST,
@@ -119,7 +118,21 @@ Token getNextToken() {
   }
 
   //INTEGER
-
+  //TODO Check smaller than UINT_MAX
+  if (isdigit(ch)) {
+    int j = 0;
+    while (isdigit(ch)) {
+      token.lexeme[j++] = ch;
+      ch = fgetc(fp);
+    }
+    if (isalpha(ch) || ch == '_') {
+      raiseError("Identifiers can't start with numbers!");
+    }
+    ungetc(ch,fp);
+    token.lexeme[j] = '\0';
+    token.type = INT_CONST;
+    return token;
+  }
 
   //OPERATOR
   char operator = isOperator(ch);
