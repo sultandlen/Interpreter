@@ -30,13 +30,16 @@ bool isKeyword (char str[]) {
   return false;
 }
 
-bool isOperator (char str[]) {
-  if (strcmp("+", str) == 0 || strcmp("-", str) == 0) {
+bool isOperator (char ch) {
+  if ('+' == ch || '-' == ch) {
     return true;
   }
-  if (strcmp(":" , str) == 0) {
-    //TODO get next str
-    return true;
+  if (':' == ch) {
+    char nextCh = fgetc(fp);
+    if ('=' == nextCh) {
+      return true;
+    }
+    //TODO Raise Error
   }
   return false;
 }
