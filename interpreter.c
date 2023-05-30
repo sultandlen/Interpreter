@@ -102,7 +102,7 @@ Token getNextToken() {
     token.lexeme[j] = '\0'; //null terminator, marks the end of a string
     token.type = IDENTIFIER;
     if(isKeyword(token.lexeme)){
-      token.type = OPERATOR;
+      token.type = KEYWORD;
     }
     return token;
   }
