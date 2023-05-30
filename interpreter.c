@@ -7,18 +7,18 @@
 FILE* fp;
 
 typedef enum {
-   IDENTIFIER,
-   INT_CONST,
-   OPERATOR,
-   STR_CONST,
-   KEYWORD,
-   ENDOFLINE,
-   NO_TYPE
+  IDENTIFIER,
+  INT_CONST,
+  OPERATOR,
+  STR_CONST,
+  KEYWORD,
+  ENDOFLINE,
+  NO_TYPE
 } TokenType;
 
 typedef struct {
-    TokenType type;
-    char lexeme[];
+  TokenType type;
+  char lexeme[];
 } Token;
 
 bool isKeyword (char str[]) {
@@ -52,59 +52,59 @@ void raiseError(char* message) {
 }
 
 Token getNextToken() {
-    Token result;
-    char ch = fgetc(fp);
+  Token result;
+  char ch = fgetc(fp);
 
 
-    //SKIP WHITESPACE
-    while (isspace(ch)) {
-        ch = fgetc(fp);
+  //SKIP WHITESPACE
+  while (isspace(ch)) {
+    ch = fgetc(fp);
     }
 
-    //SKIP COMMENT
+  //SKIP COMMENT
 
 
-    //IDENTIFIER
+  //IDENTIFIER
 
 
-    //INTEGER
+  //INTEGER
 
 
-    //OPERATOR
+  //OPERATOR
 
 
-    //STRING
+  //STRING
 
 
-    //KEYWORD
+  //KEYWORD
 
 
-    //ENDOFLINE
+  //ENDOFLINE
 
 
-    return result;
+  return result;
 }
 
 int main(int argc, char *argv[]) {
-    char* file = "myprog.tj";
-    if(argc > 1) {
-        file = argv[1];
-    }
+  char* file = "myprog.tj";
+  if(argc > 1) {
+      file = argv[1];
+  }
 
-    fp = fopen(file, "r");
+  fp = fopen(file, "r");
 
-    if(fp == NULL) {
-        printf("Cannot open file: %s\n", file);
-        return 1;
-    }
+  if(fp == NULL) {
+    printf("Cannot open file: %s\n", file);
+    return 1;
+  }
 
-    Token token;
-    char c = fgetc(fp);
-    while (c != EOF){
-        ungetc(c, fp);
-        token = getNextToken();
-        printf("%s\n", token.lexeme);
-        printf("%d\n", token.type);
-        c = fgetc(fp);
-    }
+  Token token;
+  char c = fgetc(fp);
+  while (c != EOF){
+    ungetc(c, fp);
+    token = getNextToken();
+    printf("%s\n", token.lexeme);
+    printf("%d\n", token.type);
+    c = fgetc(fp);
+  }
 }
