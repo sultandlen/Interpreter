@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 FILE* fp;
 
@@ -43,6 +44,11 @@ bool isOperator (char ch) {
     //TODO Raise Error
   }
   return false;
+}
+
+void raiseError(char* message) {
+  printf("Lexical ERR! %s\n", message);
+  exit(1);
 }
 
 Token getNextToken() {
