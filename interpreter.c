@@ -15,7 +15,8 @@ typedef enum {
   STR_CONST,
   KEYWORD,
   ENDOFLINE,
-  NO_TYPE
+  NO_TYPE,
+  ENDOFFILE
 } TokenType;
 
 typedef struct {
