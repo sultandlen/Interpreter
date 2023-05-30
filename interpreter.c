@@ -99,6 +99,11 @@ Token getNextToken() {
 
 
   //ENDOFLINE
+  if (ch == ';') {
+    result.type = ENDOFLINE;
+    strcpy(result.lexeme, "");
+    return result;
+  }
 
 
   return token;
