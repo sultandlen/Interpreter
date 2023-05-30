@@ -26,6 +26,12 @@ void raiseError(char* message) {
   exit(1);
 }
 
+void skipWhitespace(char ch) {
+  while (isspace(ch)) {
+    ch = fgetc(fp);
+  }
+}
+
 void skipComment(char ch) {
   if (ch == '/') {
     char c = fgetc(fp);
@@ -75,12 +81,7 @@ Token getNextToken() {
   char ch = fgetc(fp);
 
 
-  //SKIP WHITESPACE
-  while (isspace(ch)) {
-    ch = fgetc(fp);
-    }
-
-  //SKIP COMMENT
+  //SKIP WHITESPACE and COMMENT
 
 
   //IDENTIFIER
