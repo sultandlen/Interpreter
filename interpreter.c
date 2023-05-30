@@ -21,6 +21,11 @@ typedef struct {
   char lexeme[];
 } Token;
 
+void raiseError(char* message) {
+  printf("Lexical ERR! %s\n", message);
+  exit(1);
+}
+
 bool isKeyword (char str[]) {
   const char* KEYWORDS[] = {"new", "int", "text", "size", "subs", "locate", "insert", "override", "read", "write",
                            "from", "to", "input", "output", "asText", "asString"};
@@ -41,15 +46,12 @@ bool isOperator (char ch) {
     if ('=' == nextCh) {
       return true;
     }
-    //TODO Raise Error
+    raiseError("")
   }
   return false;
 }
 
-void raiseError(char* message) {
-  printf("Lexical ERR! %s\n", message);
-  exit(1);
-}
+
 
 Token getNextToken() {
   Token result;
