@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <ctype.h>
 
 FILE* fp;
 
@@ -50,7 +51,9 @@ Token getNextToken() {
 
 
     //SKIP WHITESPACE
-
+    while (isspace(ch)) {
+        ch = fgetc(fp);
+    }
 
     //SKIP COMMENT
 
