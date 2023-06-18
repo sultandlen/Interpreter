@@ -214,6 +214,32 @@ Token getNextToken() {
   raiseError(errMessage);
 }
 
+void parseDeclaration(Token *line) {
+  if (line[1].type != KEYWORD) {
+    raiseError("Invalid declaration!");
+  }
+  if (line[2].type != IDENTIFIER) {
+    raiseError("Invalid declaration!");
+  }
+  if (line[3].type != NO_TYPE) {
+    raiseError("Invalid declaration!");
+  }
+  Variable variable;
+  strcpy(variable.name, line[2].lexeme);
+  variable.value = calloc(1, sizeof(char));
+  variable.value = "test";
+
+  if (strcmp(line[1].lexeme, "int") == 0) {
+    variable.type = INT;
+    variables[variablesSize++] = variable;
+  } else if (strcmp(line[1].lexeme, "text") == 0) {
+    variable.type = TEXT;
+    variables[variablesSize++] = variable;
+  } else {
+    raiseError("Invalid declaration!");
+  }
+}
+
 Variable getVariable(char *name) {
   for (int i = 0; i < variablesSize; i++) {
     if (strcmp(variables[i].name, name) == 0) {
@@ -224,6 +250,10 @@ Variable getVariable(char *name) {
 }
 
 void parseLine(Token *line) {
+  // declaration
+  if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
+    parseDeclaration(line);
+  }
 }
 
 int main(int argc, char *argv[]) {
