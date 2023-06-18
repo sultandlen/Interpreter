@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include "limits.h"
 
 #define MAX_IDENT_LENGTH  30
 
@@ -132,18 +133,20 @@ Token getNextToken() {
   }
 
   //INTEGER
-  //TODO Check smaller than UINT_MAX
   if (isdigit(ch)) {
-    int j = 0;
+    unsigned long value = 0;
     while (isdigit(ch)) {
-      token.lexeme[j++] = ch;
+      value = value * 10 + (ch - '0');
+      if(value > UINT_MAX) {
+        raiseError("Integer value is too big!");
+      }
       ch = fgetc(fp);
     }
     if (isalpha(ch) || ch == '_') {
-      raiseError("Identifiers can't start with numbers!");
+      raiseError("Invalid identifier, identifiers cannot start with a number!");
     }
     ungetc(ch,fp);
-    token.lexeme[j] = '\0';
+    sprintf(token.lexeme, "%lu", value);
     token.type = INT_CONST;
     return token;
   }
