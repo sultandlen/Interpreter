@@ -283,6 +283,35 @@ void parseInput(Token *line) {
   strcpy(variable->value, buffer);
 }
 
+void parseRead(Token *line) {
+  if (line[1].type != IDENTIFIER) {
+    raiseError("Invalid read!");
+  }
+  if (line[2].type != KEYWORD && strcmp(line[2].lexeme, "from") != 0) {
+    raiseError("Invalid read!");
+  }
+  if (line[3].type != IDENTIFIER) {
+    raiseError("Invalid read!");
+  }
+  if (line[4].type != NO_TYPE) {
+    raiseError("Invalid read!");
+  }
+  // assign whole text file to a variable
+  Variable* variable = getVariable(line[1].lexeme);
+  char *fileName = strcat(line[3].lexeme, ".txt");
+  FILE *fp = fopen(fileName, "r");
+  if (fp == NULL) {
+    raiseError("File not found!");
+  }
+  fseek(fp, 0, SEEK_END);
+  long fsize = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+  char *string = calloc(fsize + 1, sizeof(char));
+  fread(string, fsize, 1, fp);
+  fclose(fp);
+  variable->value = string;
+}
+
 void parseLine(Token *line) {
   // declaration
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
@@ -295,6 +324,10 @@ void parseLine(Token *line) {
   // command input
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "input") == 0) {
     parseInput(line);
+  }
+  // command read
+  if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "read") == 0) {
+    parseRead(line);
   }
 }
 
