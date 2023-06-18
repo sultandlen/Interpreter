@@ -260,6 +260,29 @@ void parseOutput(Token *line) {
   printf("%s\n", variable.value);
 }
 
+void parseInput(Token *line) {
+  if (line[1].type != IDENTIFIER) {
+    raiseError("Invalid input!");
+  }
+  if (line[2].type != KEYWORD && strcmp(line[2].lexeme, "prompt") != 0) {
+    raiseError("Invalid input!");
+  }
+  if (line[3].type != IDENTIFIER) {
+    raiseError("Invalid input!");
+  }
+  if (line[4].type != NO_TYPE) {
+    raiseError("Invalid input!");
+  }
+  Variable prompt = *getVariable(line[3].lexeme);
+  printf("%s: ", prompt.value);
+  Variable* variable = getVariable(line[1].lexeme);
+  char buffer[100];
+  fgets(buffer, 100, stdin);
+  buffer[strcspn(buffer, "\n")] = 0;
+  variable->value = calloc(strlen(buffer) + 1, sizeof(char));
+  strcpy(variable->value, buffer);
+}
+
 void parseLine(Token *line) {
   // declaration
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
@@ -268,6 +291,10 @@ void parseLine(Token *line) {
   // command output
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "output") == 0) {
     parseOutput(line);
+  }
+  // command input
+  if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "input") == 0) {
+    parseInput(line);
   }
 }
 
