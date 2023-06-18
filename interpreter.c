@@ -147,6 +147,9 @@ Token getNextToken() {
     int j = 0;
     ch = fgetc(fp);
     while (ch != '"') {
+      if (ch == EOF) {
+        raiseError("String cannot terminated!");
+      }
       token.lexeme[j++] = ch;
       ch = fgetc(fp);
     }
