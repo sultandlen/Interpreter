@@ -214,6 +214,15 @@ Token getNextToken() {
   raiseError(errMessage);
 }
 
+Variable getVariable(char *name) {
+  for (int i = 0; i < variablesSize; i++) {
+    if (strcmp(variables[i].name, name) == 0) {
+      return variables[i];
+    }
+  }
+  raiseError("Variable not found!");
+}
+
 int main(int argc, char *argv[]) {
   variables = calloc(10, sizeof(Variable));
   char* file = "myprog.tj";
