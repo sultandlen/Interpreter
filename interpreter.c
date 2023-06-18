@@ -34,9 +34,12 @@ typedef struct {
 
 typedef struct {
   char name[MAX_IDENT_LENGTH];
-  int value;
+  char* value;
   DataType type;
 } Variable;
+
+Variable* variables;
+size_t variablesSize = 0;
 
 void raiseError(char* message) {
   printf("Lexical ERR! %s\n", message);
@@ -212,6 +215,7 @@ Token getNextToken() {
 }
 
 int main(int argc, char *argv[]) {
+  variables = calloc(10, sizeof(Variable));
   char* file = "myprog.tj";
   if(argc > 1) {
       file = argv[1];
