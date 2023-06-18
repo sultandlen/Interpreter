@@ -109,6 +109,7 @@ Token getNextToken() {
     if (ch == EOF) {
       token.type = ENDOFFILE;
       token.lexeme[0] = '\0';
+      return token;
     }
   }
 
@@ -158,6 +159,7 @@ Token getNextToken() {
     token.type = OPERATOR;
     token.lexeme[0] = operator;
     token.lexeme[1] = '\0';
+    return token;
   }
 
   //PARANTHESIS_OPEN
