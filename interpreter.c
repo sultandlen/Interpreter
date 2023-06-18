@@ -17,8 +17,8 @@ typedef enum {
   ENDOFLINE,
   NO_TYPE,
   ENDOFFILE,
-  PARANTHESIS_OPEN,
-  PARANTHESIS_CLOSE,
+  PARENTHESIS_OPEN,
+  PARENTHESIS_CLOSE,
   COMMA
 } TokenType;
 
@@ -165,16 +165,16 @@ Token getNextToken() {
     return token;
   }
 
-  //PARANTHESIS_OPEN
+  //PARENTHESIS_OPEN
   if (ch == '(') {
-    token.type = PARANTHESIS_OPEN;
+    token.type = PARENTHESIS_OPEN;
     strcpy(token.lexeme, "(");
     return token;
   }
 
-  //PARANTHESIS_CLOSE
+  //PARENTHESIS_CLOSE
   if (ch == ')') {
-    token.type = PARANTHESIS_CLOSE;
+    token.type = PARENTHESIS_CLOSE;
     strcpy(token.lexeme, ")");
     return token;
   }
@@ -186,7 +186,7 @@ Token getNextToken() {
     return token;
   }
 
-  //STRING
+  //STRING CONSTANT
   if (ch == '"') {
     int j = 0;
     ch = (char) fgetc(fp);
@@ -296,7 +296,6 @@ void parseRead(Token *line) {
   if (line[4].type != NO_TYPE) {
     raiseError("Invalid read!");
   }
-  // assign whole text file to a variable
   Variable* variable = getVariable(line[1].lexeme);
   char *fileName = strcat(line[3].lexeme, ".txt");
   FILE *fp = fopen(fileName, "r");
@@ -317,15 +316,15 @@ void parseLine(Token *line) {
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
     parseDeclaration(line);
   }
-  // command output
+  //COMMAND OUTPUT
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "output") == 0) {
     parseOutput(line);
   }
-  // command input
+  //COMMAND INPUT
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "input") == 0) {
     parseInput(line);
   }
-  // command read
+  //COMMAND READ
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "read") == 0) {
     parseRead(line);
   }
