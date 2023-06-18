@@ -159,6 +159,13 @@ Token getNextToken() {
     return token;
   }
 
+  //COMMA
+  if (ch == ',') {
+    token.type = COMMA;
+    strcpy(token.lexeme, ",");
+    return token;
+  }
+
   //STRING
   if (ch == '"') {
     int j = 0;
