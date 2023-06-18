@@ -143,7 +143,17 @@ Token getNextToken() {
   }
 
   //STRING
-
+  if (ch == '"') {
+    int j = 0;
+    ch = fgetc(fp);
+    while (ch != '"') {
+      token.lexeme[j++] = ch;
+      ch = fgetc(fp);
+    }
+    token.lexeme[j] = '\0';
+    token.type = STR_CONST;
+    return token;
+  }
 
   //ENDOFLINE
   if (ch == ';') {
