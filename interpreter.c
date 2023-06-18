@@ -240,10 +240,10 @@ void parseDeclaration(Token *line) {
   }
 }
 
-Variable getVariable(char *name) {
+Variable* getVariable(char *name) {
   for (int i = 0; i < variablesSize; i++) {
     if (strcmp(variables[i].name, name) == 0) {
-      return variables[i];
+      return &variables[i];
     }
   }
   raiseError("Variable not found!");
@@ -256,7 +256,7 @@ void parseOutput(Token *line) {
   if (line[2].type != NO_TYPE) {
     raiseError("Invalid output!");
   }
-  Variable variable = getVariable(line[1].lexeme);
+  Variable variable = *getVariable(line[1].lexeme);
   printf("%s\n", variable.value);
 }
 
