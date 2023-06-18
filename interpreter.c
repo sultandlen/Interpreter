@@ -45,14 +45,14 @@ void raiseError(char* message) {
 
 char skipWhitespace(char ch) {
   while (isspace(ch)) {
-    ch = fgetc(fp);
+    ch = (char) fgetc(fp);
   }
   return ch;
 }
 
 char skipComment(char ch) {
   if (ch == '/') {
-    ch = fgetc(fp);
+    ch = (char) fgetc(fp);
     char nextc;
     if (ch == '*') {
       do {
@@ -60,9 +60,9 @@ char skipComment(char ch) {
           raiseError("Comment cannot terminated!");
         }
         ch = nextc;
-        nextc = fgetc(fp);
+        nextc = (char) fgetc(fp);
       } while (!(ch == '*' && nextc == '/'));
-      return fgetc(fp);
+      return (char) fgetc(fp);
     } else {
       raiseError("Unrecognized character: '/'");
     }
@@ -86,7 +86,7 @@ char isOperator (char ch) {
     return ch;
   }
   if (ch == ':') {
-    char nextCh = fgetc(fp);
+    char nextCh = (char) fgetc(fp);
     if (nextCh == '=') {
       return '=';
     }
@@ -99,7 +99,7 @@ char isOperator (char ch) {
 Token getNextToken() {
   Token token;
   token.lexeme = calloc(MAX_IDENT_LENGTH, sizeof(char));
-  char ch = fgetc(fp);
+  char ch = (char) fgetc(fp);
 
 
   //SKIP WHITESPACE and COMMENT
@@ -122,7 +122,7 @@ Token getNextToken() {
         sprintf(errMessage, "Identifiers must be smaller or equal than %d characters!", MAX_IDENT_LENGTH);
         raiseError(errMessage);
       }
-      ch = fgetc(fp);
+      ch = (char) fgetc(fp);
     }
     ungetc(ch, fp);
     token.lexeme[j] = '\0'; //null terminator, marks the end of a string
@@ -141,7 +141,7 @@ Token getNextToken() {
       if(value > UINT_MAX) {
         raiseError("Integer value is too big!");
       }
-      ch = fgetc(fp);
+      ch = (char) fgetc(fp);
     }
     if (isalpha(ch) || ch == '_') {
       raiseError("Invalid identifier, identifiers cannot start with a number!");
@@ -184,13 +184,13 @@ Token getNextToken() {
   //STRING
   if (ch == '"') {
     int j = 0;
-    ch = fgetc(fp);
+    ch = (char) fgetc(fp);
     while (ch != '"') {
       if (ch == EOF) {
         raiseError("String cannot terminated!");
       }
       token.lexeme[j++] = ch;
-      ch = fgetc(fp);
+      ch = (char) fgetc(fp);
     }
     token.lexeme[j] = '\0';
     token.type = STR_CONST;
@@ -222,12 +222,12 @@ int main(int argc, char *argv[]) {
   }
 
   Token token;
-  char c = fgetc(fp);
+  char c = (char) fgetc(fp);
   while (c != EOF){
     ungetc(c, fp);
     token = getNextToken();
     printf("lexeme: %s ", token.lexeme);
     printf("type: %d\n", token.type);
-    c = fgetc(fp);
+    c = (char) fgetc(fp);
   }
 }
