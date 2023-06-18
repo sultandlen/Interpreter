@@ -15,7 +15,10 @@ typedef enum {
   KEYWORD,
   ENDOFLINE,
   NO_TYPE,
-  ENDOFFILE
+  ENDOFFILE,
+  PARANTHESIS_OPEN,
+  PARANTHESIS_CLOSE,
+  COMMA
 } TokenType;
 
 typedef struct {
@@ -140,6 +143,20 @@ Token getNextToken() {
     token.type = OPERATOR;
     token.lexeme[0] = operator;
     token.lexeme[1] = '\0';
+  }
+
+  //PARANTHESIS_OPEN
+  if (ch == '(') {
+    token.type = PARANTHESIS_OPEN;
+    strcpy(token.lexeme, "(");
+    return token;
+  }
+
+  //PARANTHESIS_CLOSE
+  if (ch == ')') {
+    token.type = PARANTHESIS_CLOSE;
+    strcpy(token.lexeme, ")");
+    return token;
   }
 
   //STRING
