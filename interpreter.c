@@ -21,10 +21,21 @@ typedef enum {
   COMMA
 } TokenType;
 
+typedef enum {
+  INT,
+  TEXT
+} DataType;
+
 typedef struct {
   TokenType type;
   char lexeme[32];
 } Token;
+
+typedef struct {
+  char name[MAX_IDENT_LENGTH];
+  int value;
+  DataType type;
+} Variable;
 
 void raiseError(char* message) {
   printf("Lexical ERR! %s\n", message);
