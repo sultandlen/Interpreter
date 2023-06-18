@@ -249,10 +249,25 @@ Variable getVariable(char *name) {
   raiseError("Variable not found!");
 }
 
+void parseOutput(Token *line) {
+  if (line[1].type != IDENTIFIER) {
+    raiseError("Invalid output!");
+  }
+  if (line[2].type != NO_TYPE) {
+    raiseError("Invalid output!");
+  }
+  Variable variable = getVariable(line[1].lexeme);
+  printf("%s\n", variable.value);
+}
+
 void parseLine(Token *line) {
   // declaration
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
     parseDeclaration(line);
+  }
+  // command output
+  if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "output") == 0) {
+    parseOutput(line);
   }
 }
 
