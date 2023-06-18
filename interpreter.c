@@ -29,7 +29,7 @@ typedef enum {
 
 typedef struct {
   TokenType type;
-  char lexeme[32];
+  char* lexeme;
 } Token;
 
 typedef struct {
@@ -98,6 +98,7 @@ char isOperator (char ch) {
 
 Token getNextToken() {
   Token token;
+  token.lexeme = calloc(MAX_IDENT_LENGTH, sizeof(char));
   char ch = fgetc(fp);
 
 
