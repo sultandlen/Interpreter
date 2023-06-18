@@ -223,6 +223,9 @@ Variable getVariable(char *name) {
   raiseError("Variable not found!");
 }
 
+void parseLine(Token *line) {
+}
+
 int main(int argc, char *argv[]) {
   variables = calloc(10, sizeof(Variable));
   char* file = "myprog.tj";
@@ -239,11 +242,19 @@ int main(int argc, char *argv[]) {
 
   Token token;
   char c = (char) fgetc(fp);
+  Token* line = calloc(10, sizeof(Token));
+  int i = 0;
   while (c != EOF){
     ungetc(c, fp);
     token = getNextToken();
-    printf("lexeme: %s ", token.lexeme);
-    printf("type: %d\n", token.type);
+    if (token.type != ENDOFLINE && token.type != ENDOFFILE) {
+      line[i++] = token;
+    } else if (token.type == ENDOFLINE) {
+      line[i].type = NO_TYPE;
+      parseLine(line);
+      line = calloc(10, sizeof(Token));
+      i = 0;
+    }
     c = (char) fgetc(fp);
   }
 }
