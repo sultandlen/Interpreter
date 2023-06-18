@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "limits.h"
+#include <stdint.h>
 
 #define MAX_IDENT_LENGTH  30
 
@@ -138,7 +138,7 @@ Token getNextToken() {
     unsigned long value = 0;
     while (isdigit(ch)) {
       value = value * 10 + (ch - '0');
-      if(value > UINT_MAX) {
+      if(value > 4294967295 ) {
         raiseError("Integer value is too big!");
       }
       ch = (char) fgetc(fp);
