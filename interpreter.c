@@ -334,6 +334,38 @@ void parseWrite(Token *line) {
   fclose(fp);
 }
 
+void parseAssignment(Token *line) {
+  if (line[0].type != IDENTIFIER) {
+    raiseError("Invalid assignment!");
+  }
+  if (line[3].type != NO_TYPE) {
+    raiseError("Invalid assignment!");
+  }
+  Variable *variable = getVariable(line[0].lexeme);
+  if (line[2].type == INT_CONST){
+    if (variable->type != INT) {
+      raiseError("Invalid assignment!");
+    }
+    variable->value = calloc(strlen(line[2].lexeme) + 1, sizeof(char));
+    strcpy(variable->value, line[2].lexeme);
+  } else if (line[2].type == STR_CONST){
+    if (variable->type != TEXT) {
+      raiseError("Invalid assignment!");
+    }
+    variable->value = calloc(strlen(line[2].lexeme) + 1, sizeof(char));
+    strcpy(variable->value, line[2].lexeme);
+  } else if (line[2].type == IDENTIFIER) {
+    Variable *variable2 = getVariable(line[2].lexeme);
+    if (variable->type != variable2->type) {
+      raiseError("Invalid assignment!");
+    }
+    variable->value = calloc(strlen(variable2->value) + 1, sizeof(char));
+    strcpy(variable->value, variable2->value);
+  } else {
+    raiseError("Invalid assignment!");
+  }
+}
+
 void parseLine(Token *line) {
   // declaration
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
@@ -354,6 +386,11 @@ void parseLine(Token *line) {
   //COMMAND WRITE
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "write") == 0) {
     parseWrite(line);
+  }
+
+  //ASSIGNMENT
+  if (line[1].type == OPERATOR && strcmp(line[1].lexeme, "=") == 0) {
+    parseAssignment(line);
   }
 }
 
