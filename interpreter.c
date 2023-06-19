@@ -400,6 +400,24 @@ int locateFunc(const char* bigText, const char* smallText, int start) {
   return 0;  // smallText not found
 }
 
+char* insertFunc(char* myText, int location, const char* insertText) {
+  int textLen = (int) strlen(myText);
+  int insertLen = (int) strlen(insertText);
+  if (location < 0 || location > textLen) {
+    return myText;  // Invalid location, return the original text
+  }
+  int newLen = textLen + insertLen;
+  char* newText = (char*)malloc((newLen + 1) * sizeof(char));
+  if (newText == NULL) {
+    return myText;  // Memory allocation failed, return the original text
+  }
+  strncpy(newText, myText, location);
+  strncpy(newText + location, insertText, insertLen);
+  strncpy(newText + location + insertLen, myText + location, textLen - location);
+  newText[newLen] = '\0';  // Add null terminator at the end
+  return newText;
+}
+
 void parseFunctionAssignment(Token *line) {
   if(strcmp(line[2].lexeme, "size") == 0){
     if(line[4].type != IDENTIFIER){
@@ -499,6 +517,28 @@ void parseFunctionAssignment(Token *line) {
     }
     variable2->value = calloc(strlen(string) + 1, sizeof(char));
     strcpy(variable2->value, string);
+  } else if (strcmp(line[2].lexeme, "insert") == 0) {
+    if(line[4].type != IDENTIFIER || line[5].type != COMMA || line[6].type != INT_CONST || line[7].type != COMMA || line[8].type != IDENTIFIER || line[9].type != PARENTHESIS_CLOSE || line[10].type != NO_TYPE){
+      raiseError("Invalid function assignment!");
+    }
+    Variable *variable = getVariable(line[4].lexeme);
+    if(variable->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *myText = variable->value;
+    int position = (int) strtol(line[6].lexeme, NULL, 10);
+    Variable *variable2 = getVariable(line[8].lexeme);
+    if(variable2->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *insertText = variable2->value;
+    char *newText = insertFunc(myText, position, insertText);
+    Variable *variable3 = getVariable(line[0].lexeme);
+    if(variable3->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    variable3->value = calloc(strlen(newText) + 1, sizeof(char));
+    strcpy(variable3->value, newText);
   }
 }
 
