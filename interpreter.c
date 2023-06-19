@@ -148,7 +148,7 @@ Token getNextToken() {
       raiseError("Invalid identifier, identifiers cannot start with a number!");
     }
     ungetc(ch,fp);
-    sprintf(token.lexeme, "%lu", value);
+    sprintf(token.lexeme, "%llu", value);
     token.type = INT_CONST;
     return token;
   }
