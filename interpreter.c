@@ -401,7 +401,6 @@ int locateFunc(const char* bigText, const char* smallText, int start) {
 }
 
 void parseFunctionAssignment(Token *line) {
-
   if(strcmp(line[2].lexeme, "size") == 0){
     if(line[4].type != IDENTIFIER){
       raiseError("Invalid function assignment!");
@@ -466,6 +465,23 @@ void parseFunctionAssignment(Token *line) {
     }
     variable3->value = calloc(10, sizeof(char));
     sprintf(variable3->value, "%d", location);
+  } else if (strcmp(line[2].lexeme, "asString") == 0){
+    if(line[4].type != IDENTIFIER || line[5].type != PARENTHESIS_CLOSE || line[6].type != NO_TYPE){
+      raiseError("Invalid function assignment!");
+    }
+    Variable *variable = getVariable(line[4].lexeme);
+    if(variable->type != INT){
+      raiseError("Invalid function assignment!");
+    }
+    int number = (int) strtol(variable->value, NULL, 10);
+    char *string = calloc(10, sizeof(char));
+    sprintf(string, "%d", number);
+    Variable *variable2 = getVariable(line[0].lexeme);
+    if(variable2->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    variable2->value = calloc(strlen(string) + 1, sizeof(char));
+    strcpy(variable2->value, string);
   }
 }
 
