@@ -311,6 +311,29 @@ void parseRead(Token *line) {
   variable->value = string;
 }
 
+void parseWrite(Token *line) {
+  if (line[1].type != IDENTIFIER) {
+    raiseError("Invalid write!");
+  }
+  if (line[2].type != KEYWORD && strcmp(line[2].lexeme, "to") != 0) {
+    raiseError("Invalid write!");
+  }
+  if (line[3].type != IDENTIFIER) {
+    raiseError("Invalid write!");
+  }
+  if (line[4].type != NO_TYPE) {
+    raiseError("Invalid write!");
+  }
+  Variable* variable = getVariable(line[1].lexeme);
+  char *fileName = strcat(line[3].lexeme, ".txt");
+  FILE *fp = fopen(fileName, "w");
+  if (fp == NULL) {
+    raiseError("File not found!");
+  }
+  fprintf(fp, "%s", variable->value);
+  fclose(fp);
+}
+
 void parseLine(Token *line) {
   // declaration
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
@@ -327,6 +350,10 @@ void parseLine(Token *line) {
   //COMMAND READ
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "read") == 0) {
     parseRead(line);
+  }
+  //COMMAND WRITE
+  if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "write") == 0) {
+    parseWrite(line);
   }
 }
 
