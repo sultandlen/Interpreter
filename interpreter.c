@@ -480,9 +480,9 @@ void parseArithmeticAssignment(Token *line) {
     raiseError("Invalid assignment!");
   }
   Variable *variable1 = getVariable(line[0].lexeme);
-  int value1;
-  int value2;
   if(variable1->type == INT) {
+    int value1;
+    int value2;
     if (line[2].type != INT_CONST && line[2].type != IDENTIFIER) {
       raiseError("Invalid assignment!");
     }
@@ -515,6 +515,48 @@ void parseArithmeticAssignment(Token *line) {
     }
   }
 
+  if(variable1->type == TEXT) {
+    char *value1;
+    char *value2;
+    if (line[2].type != STR_CONST && line[2].type != IDENTIFIER) {
+      raiseError("Invalid assignment!");
+    }
+    if (line[4].type != STR_CONST && line[4].type != IDENTIFIER) {
+      raiseError("Invalid assignment!");
+    }
+    if (line[2].type == STR_CONST) {
+      value1 = line[2].lexeme;
+    } else {
+      Variable *variable2 = getVariable(line[2].lexeme);
+      value1 = variable2->value;
+    }
+    if (line[4].type == STR_CONST) {
+      value2 = line[4].lexeme;
+    } else {
+      Variable *variable2 = getVariable(line[4].lexeme);
+      value2 = variable2->value;
+    }
+    if (strcmp(line[3].lexeme, "+") == 0) {
+      variable1->value = calloc(strlen(value1) + strlen(value2) + 1, sizeof(char));
+      strcpy(variable1->value, value1);
+      strcat(variable1->value, value2);
+    } else if (strcmp(line[3].lexeme, "-") == 0) {
+      if (strlen(value1) < strlen(value2)) {
+        raiseError("The subtrahend cannot be longer than the minuend!");
+      }
+      size_t resultLength = strlen(value1) - strlen(value2) + 1;
+      variable1->value = calloc(resultLength, sizeof(char));
+      char* found = strstr(value1, value2);
+      if (found != NULL) {
+        strncpy(variable1->value, value1, found - value1);
+        strcat(variable1->value, found + strlen(value2));
+      } else {
+        strcpy(variable1->value, value1);
+      }
+    } else {
+      raiseError("Invalid assignment!");
+    }
+  }
 }
 
 void parseLine(Token *line) {
