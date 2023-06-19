@@ -371,6 +371,15 @@ int sizeFunc(char *string) {
   return i;
 }
 
+char* subsFunc(char *string, int start, int end) {
+  char *substring = calloc(end - start + 1, sizeof(char));
+  int j = 0;
+  for (int i = start; i < end; i++) {
+    substring[j++] = string[i];
+  }
+  return substring;
+}
+
 void parseFunctionAssignment(Token *line) {
 
   if(strcmp(line[2].lexeme, "size") == 0){
@@ -396,6 +405,25 @@ void parseFunctionAssignment(Token *line) {
     }
     variable2->value = calloc(strlen(size) + 1, sizeof(char));
     strcpy(variable2->value, size);
+
+  } else if (strcmp(line[2].lexeme, "subs") == 0) {
+    if(line[4].type != IDENTIFIER || line[5].type != COMMA || line[6].type != INT_CONST || line[7].type != COMMA || line[8].type != INT_CONST || line[9].type != PARENTHESIS_CLOSE || line[10].type != NO_TYPE){
+      raiseError("Invalid function assignment!");
+    }
+    Variable *variable = getVariable(line[4].lexeme);
+    if(variable->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *string = variable->value;
+    int start = (int) strtol(line[6].lexeme, NULL, 10);
+    int end = (int) strtol(line[8].lexeme, NULL, 10);
+    char *substring = subsFunc(string, start, end);
+    Variable *variable2 = getVariable(line[0].lexeme);
+    if(variable2->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    variable2->value = calloc(strlen(substring) + 1, sizeof(char));
+    strcpy(variable2->value, substring);
 
   }
 }
