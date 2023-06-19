@@ -338,9 +338,6 @@ void parseAssignment(Token *line) {
   if (line[0].type != IDENTIFIER) {
     raiseError("Invalid assignment!");
   }
-  if (line[3].type != NO_TYPE) {
-    raiseError("Invalid assignment!");
-  }
   Variable *variable = getVariable(line[0].lexeme);
   if (line[2].type == INT_CONST){
     if (variable->type != INT) {
@@ -364,6 +361,14 @@ void parseAssignment(Token *line) {
   } else {
     raiseError("Invalid assignment!");
   }
+}
+
+void parseFunctionAssignment(Token *line) {
+  printf("function assignment\n");
+}
+
+void parseArithmeticAssignment(Token *line) {
+  printf("arithmetic assignment\n");
 }
 
 void parseLine(Token *line) {
@@ -390,7 +395,15 @@ void parseLine(Token *line) {
 
   //ASSIGNMENT
   if (line[1].type == OPERATOR && strcmp(line[1].lexeme, "=") == 0) {
-    parseAssignment(line);
+    if(line[3].type == NO_TYPE) {
+      parseAssignment(line);
+    } else if(line[2].type == KEYWORD){
+      parseFunctionAssignment(line);
+    } else if(line[3].type == OPERATOR && line[5].type == NO_TYPE) {
+      parseArithmeticAssignment(line);
+    } else {
+      raiseError("Invalid assignment!");
+    }
   }
 }
 
