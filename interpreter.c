@@ -136,7 +136,7 @@ Token getNextToken() {
 
   //INTEGER
   if (isdigit(ch)) {
-    unsigned long value = 0;
+    unsigned long long value = 0;
     while (isdigit(ch)) {
       value = value * 10 + (ch - '0');
       if(value > 4294967295 ) {
