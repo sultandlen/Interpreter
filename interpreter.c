@@ -363,8 +363,41 @@ void parseAssignment(Token *line) {
   }
 }
 
+int sizeFunc(char *string) {
+  int i = 0;
+  while (string[i] != '\0') {
+    i++;
+  }
+  return i;
+}
+
 void parseFunctionAssignment(Token *line) {
-  printf("function assignment\n");
+
+  if(strcmp(line[2].lexeme, "size") == 0){
+    if(line[4].type != IDENTIFIER){
+      raiseError("Invalid function assignment!");
+    }
+    if(line[5].type != PARENTHESIS_CLOSE){
+      raiseError("Invalid function assignment!");
+    }
+    if(line[6].type != NO_TYPE){
+      raiseError("Invalid function assignment!");
+    }
+    Variable *variable = getVariable(line[4].lexeme);
+    if(variable->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *string = variable->value;
+    char *size = calloc(10, sizeof(char));
+    sprintf(size, "%d", sizeFunc(string));
+    Variable *variable2 = getVariable(line[0].lexeme);
+    if(variable2->type != INT){
+      raiseError("Invalid function assignment!");
+    }
+    variable2->value = calloc(strlen(size) + 1, sizeof(char));
+    strcpy(variable2->value, size);
+
+  }
 }
 
 void parseArithmeticAssignment(Token *line) {
@@ -397,7 +430,7 @@ void parseLine(Token *line) {
   if (line[1].type == OPERATOR && strcmp(line[1].lexeme, "=") == 0) {
     if(line[3].type == NO_TYPE) {
       parseAssignment(line);
-    } else if(line[2].type == KEYWORD){
+    } else if(line[2].type == KEYWORD && line[3].type == PARENTHESIS_OPEN){
       parseFunctionAssignment(line);
     } else if(line[3].type == OPERATOR && line[5].type == NO_TYPE) {
       parseArithmeticAssignment(line);
