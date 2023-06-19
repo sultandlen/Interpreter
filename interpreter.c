@@ -209,7 +209,7 @@ Token getNextToken() {
     return token;
   }
 
-  char errMessage[26];
+  char errMessage[50];
   sprintf(errMessage, "Unrecognized character: '%c'!", ch);
   raiseError(errMessage);
 }
