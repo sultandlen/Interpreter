@@ -418,6 +418,23 @@ char* insertFunc(char* myText, int location, const char* insertText) {
   return newText;
 }
 
+char* overrideFunc(const char* myText, int location, const char* ovrText) {
+  int textLen = strlen(myText);
+  int ovrLen = strlen(ovrText);
+  int newLen = location + ovrLen;
+  if (newLen > textLen) {
+    newLen = textLen;  // Adjust the new length to terminate at the end of myText
+  }
+  char* newText = (char*)malloc((newLen + 1) * sizeof(char));
+  if (newText == NULL) {
+    return NULL;  // Memory allocation failed, return NULL
+  }
+  strncpy(newText, myText, location);
+  strncpy(newText + location, ovrText, newLen - location);
+  newText[newLen] = '\0';  // Add null terminator at the end
+  return newText;
+}
+
 void parseFunctionAssignment(Token *line) {
   if(strcmp(line[2].lexeme, "size") == 0){
     if(line[4].type != IDENTIFIER){
@@ -539,6 +556,30 @@ void parseFunctionAssignment(Token *line) {
     }
     variable3->value = calloc(strlen(newText) + 1, sizeof(char));
     strcpy(variable3->value, newText);
+  } else if (strcmp(line[2].lexeme, "override") == 0) {
+    if(line[4].type != IDENTIFIER || line[5].type != COMMA || line[6].type != INT_CONST || line[7].type != COMMA || line[8].type != IDENTIFIER|| line[9].type != PARENTHESIS_CLOSE || line[10].type != NO_TYPE){
+      raiseError("Invalid function assignment!");
+    }
+    Variable *variable = getVariable(line[4].lexeme);
+    if(variable->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *myText = variable->value;
+    int position = (int) strtol(line[6].lexeme, NULL, 10);
+    Variable *variable2 = getVariable(line[8].lexeme);
+    if(variable2->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *overText = variable2->value;
+    char *newText = overrideFunc(myText, position, overText);
+    Variable *variable3 = getVariable(line[0].lexeme);
+    if(variable3->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    variable3->value = calloc(strlen(newText) + 1, sizeof(char));
+    strcpy(variable3->value, newText);
+  } else {
+    raiseError("Invalid function assignment!");
   }
 }
 
