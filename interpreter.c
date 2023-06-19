@@ -8,6 +8,7 @@
 #define MAX_IDENT_LENGTH  30
 
 FILE* fp;
+int currentLine = 1;
 typedef enum {
   IDENTIFIER,
   INT_CONST,
@@ -42,7 +43,7 @@ Variable* variables;
 size_t variablesSize = 0;
 
 void raiseError(char* message) {
-  printf("Lexical ERR! %s\n", message);
+  printf("ERR! Line %d:  %s\n", currentLine, message);
   exit(1);
 }
 
@@ -658,7 +659,7 @@ void parseLine(Token *line) {
       raiseError("Invalid assignment!");
     }
   }
-  raiseError("Unknown line!");
+  raiseError("Parsing error!");
 }
 
 int main(int argc, char *argv[]) {
@@ -689,6 +690,7 @@ int main(int argc, char *argv[]) {
       parseLine(line);
       line = calloc(10, sizeof(Token));
       i = 0;
+      currentLine++;
     }
     c = (char) fgetc(fp);
   }
