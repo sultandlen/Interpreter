@@ -60,7 +60,7 @@ char skipComment(char ch) {
     if (ch == '*') {
       do {
         if (nextc == EOF) {
-          raiseError("Comment cannot terminated!");
+          raiseError("Comment cannot be terminated!");
         }
         ch = nextc;
         nextc = (char) fgetc(fp);
@@ -76,7 +76,7 @@ char skipComment(char ch) {
 bool isKeyword (char str[]) {
   const char* KEYWORDS[] = {"new", "int", "text", "size", "subs", "locate", "insert", "override", "read", "write",
                            "from", "to", "input", "output", "asText", "asString"};
-  for (int i = 0; i < sizeof(KEYWORDS) /sizeof(KEYWORDS[0]); i++) {
+  for (int i = 0; i < sizeof(KEYWORDS) / sizeof(KEYWORDS[0]); i++) {
     if (strcmp(KEYWORDS[i], str) == 0) {
       return true;
     }
@@ -85,9 +85,7 @@ bool isKeyword (char str[]) {
 }
 
 char isOperator (char ch) {
-  if (ch == '+' || ch == '-') {
-    return ch;
-  }
+  if (ch == '+' || ch == '-') { return ch; }
   if (ch == ':') {
     char nextCh = (char) fgetc(fp);
     if (nextCh == '=') {
@@ -98,12 +96,10 @@ char isOperator (char ch) {
   return '\0';
 }
 
-
 Token getNextToken() {
   Token token;
   token.lexeme = calloc(MAX_IDENT_LENGTH, sizeof(char));
   char ch = (char) fgetc(fp);
-
 
   //SKIP WHITESPACE and COMMENT
   while(isspace(ch) || ch == '/') {
@@ -215,29 +211,25 @@ Token getNextToken() {
 }
 
 void parseDeclaration(Token *line) {
-  if (line[1].type != KEYWORD) {
-    raiseError("Invalid declaration!");
+  if (line[1].type != KEYWORD || line[2].type != IDENTIFIER || line[3].type != NO_TYPE) {
+    raiseError("Invalid variable initialization");
   }
-  if (line[2].type != IDENTIFIER) {
-    raiseError("Invalid declaration!");
-  }
-  if (line[3].type != NO_TYPE) {
-    raiseError("Invalid declaration!");
-  }
+
   Variable variable;
   strcpy(variable.name, line[2].lexeme);
   variable.value = calloc(1, sizeof(char));
-  variable.value = "test";
+  variable.value = "";
 
   if (strcmp(line[1].lexeme, "int") == 0) {
     variable.type = INT;
-    variables[variablesSize++] = variable;
   } else if (strcmp(line[1].lexeme, "text") == 0) {
     variable.type = TEXT;
-    variables[variablesSize++] = variable;
   } else {
-    raiseError("Invalid declaration!");
+    char errMessage[50];
+    sprintf(errMessage, "Unrecognized type: %s!", line[1].lexeme);
+    raiseError(errMessage);
   }
+  variables[variablesSize++] = variable;
 }
 
 Variable* getVariable(char *name) {
@@ -246,31 +238,24 @@ Variable* getVariable(char *name) {
       return &variables[i];
     }
   }
-  raiseError("Variable not found!");
+  char errMessage[50];
+  sprintf(errMessage, "Variable not found: %s!", name);
+  raiseError(errMessage);
 }
 
 void parseOutput(Token *line) {
-  if (line[1].type != IDENTIFIER) {
-    raiseError("Invalid output!");
-  }
-  if (line[2].type != NO_TYPE) {
-    raiseError("Invalid output!");
+  if (line[1].type != IDENTIFIER || line[2].type != NO_TYPE) {
+    raiseError("Invalid output statement!");
   }
   Variable variable = *getVariable(line[1].lexeme);
   printf("%s\n", variable.value);
 }
 
 void parseInput(Token *line) {
-  if (line[1].type != IDENTIFIER) {
+  if (line[1].type != IDENTIFIER || line[3].type != IDENTIFIER || line[4].type != NO_TYPE) {
     raiseError("Invalid input!");
   }
   if (line[2].type != KEYWORD && strcmp(line[2].lexeme, "prompt") != 0) {
-    raiseError("Invalid input!");
-  }
-  if (line[3].type != IDENTIFIER) {
-    raiseError("Invalid input!");
-  }
-  if (line[4].type != NO_TYPE) {
     raiseError("Invalid input!");
   }
   Variable prompt = *getVariable(line[3].lexeme);
@@ -284,16 +269,10 @@ void parseInput(Token *line) {
 }
 
 void parseRead(Token *line) {
-  if (line[1].type != IDENTIFIER) {
+  if (line[1].type != IDENTIFIER || line[3].type != IDENTIFIER || line[4].type != NO_TYPE) {
     raiseError("Invalid read!");
   }
   if (line[2].type != KEYWORD && strcmp(line[2].lexeme, "from") != 0) {
-    raiseError("Invalid read!");
-  }
-  if (line[3].type != IDENTIFIER) {
-    raiseError("Invalid read!");
-  }
-  if (line[4].type != NO_TYPE) {
     raiseError("Invalid read!");
   }
   Variable* variable = getVariable(line[1].lexeme);
@@ -312,16 +291,10 @@ void parseRead(Token *line) {
 }
 
 void parseWrite(Token *line) {
-  if (line[1].type != IDENTIFIER) {
+  if (line[1].type != IDENTIFIER || line[3].type != IDENTIFIER || line[4].type != NO_TYPE) {
     raiseError("Invalid write!");
   }
   if (line[2].type != KEYWORD && strcmp(line[2].lexeme, "to") != 0) {
-    raiseError("Invalid write!");
-  }
-  if (line[3].type != IDENTIFIER) {
-    raiseError("Invalid write!");
-  }
-  if (line[4].type != NO_TYPE) {
     raiseError("Invalid write!");
   }
   Variable* variable = getVariable(line[1].lexeme);
@@ -363,7 +336,7 @@ void parseAssignment(Token *line) {
   }
 }
 
-int sizeFunc(char *string) {
+int sizeFunc(const char *string) {
   int i = 0;
   while (string[i] != '\0') {
     i++;
@@ -371,7 +344,7 @@ int sizeFunc(char *string) {
   return i;
 }
 
-char* subsFunc(char *string, int start, int end) {
+char* subsFunc(const char *string, int start, int end) {
   char *substring = calloc(end - start + 1, sizeof(char));
   int j = 0;
   for (int i = start; i < end; i++) {
@@ -381,69 +354,55 @@ char* subsFunc(char *string, int start, int end) {
 }
 
 int locateFunc(const char* bigText, const char* smallText, int start) {
-  int bigLen = strlen(bigText);
-  int smallLen = strlen(smallText);
+  int bigLen = (int) strlen(bigText);
+  int smallLen = (int) strlen(smallText);
   if (start < 0 || start >= bigLen) {
-    return 0;  // Invalid start position
+    return 0;
   }
   int i, j;
   for (i = start; i <= bigLen - smallLen; i++) {
     for (j = 0; j < smallLen; j++) {
       if (bigText[i + j] != smallText[j]) {
-        break;  // Mismatch, move to the next position in bigText
+        break;
       }
     }
     if (j == smallLen) {
-      return i;  // Found smallText at position i
+      return i;
     }
   }
-  return 0;  // smallText not found
+  return 0;
 }
 
 char* insertFunc(char* myText, int location, const char* insertText) {
   int textLen = (int) strlen(myText);
   int insertLen = (int) strlen(insertText);
-  if (location < 0 || location > textLen) {
-    return myText;  // Invalid location, return the original text
-  }
+  if (location < 0 || location > textLen) { return myText; }
   int newLen = textLen + insertLen;
   char* newText = (char*)malloc((newLen + 1) * sizeof(char));
-  if (newText == NULL) {
-    return myText;  // Memory allocation failed, return the original text
-  }
+  if (newText == NULL) { return myText; }
   strncpy(newText, myText, location);
   strncpy(newText + location, insertText, insertLen);
   strncpy(newText + location + insertLen, myText + location, textLen - location);
-  newText[newLen] = '\0';  // Add null terminator at the end
+  newText[newLen] = '\0';
   return newText;
 }
 
 char* overrideFunc(const char* myText, int location, const char* ovrText) {
-  int textLen = strlen(myText);
-  int ovrLen = strlen(ovrText);
+  int textLen = (int) strlen(myText);
+  int ovrLen = (int) strlen(ovrText);
   int newLen = location + ovrLen;
-  if (newLen > textLen) {
-    newLen = textLen;  // Adjust the new length to terminate at the end of myText
-  }
+  if (newLen > textLen) { newLen = textLen; }
   char* newText = (char*)malloc((newLen + 1) * sizeof(char));
-  if (newText == NULL) {
-    return NULL;  // Memory allocation failed, return NULL
-  }
+  if (newText == NULL) { return NULL; }
   strncpy(newText, myText, location);
   strncpy(newText + location, ovrText, newLen - location);
-  newText[newLen] = '\0';  // Add null terminator at the end
+  newText[newLen] = '\0';
   return newText;
 }
 
 void parseFunctionAssignment(Token *line) {
   if(strcmp(line[2].lexeme, "size") == 0){
-    if(line[4].type != IDENTIFIER){
-      raiseError("Invalid function assignment!");
-    }
-    if(line[5].type != PARENTHESIS_CLOSE){
-      raiseError("Invalid function assignment!");
-    }
-    if(line[6].type != NO_TYPE){
+    if(line[4].type != IDENTIFIER || line[5].type != PARENTHESIS_CLOSE || line[6].type != NO_TYPE){
       raiseError("Invalid function assignment!");
     }
     Variable *variable = getVariable(line[4].lexeme);
@@ -459,7 +418,6 @@ void parseFunctionAssignment(Token *line) {
     }
     variable2->value = calloc(strlen(size) + 1, sizeof(char));
     strcpy(variable2->value, size);
-
   } else if (strcmp(line[2].lexeme, "subs") == 0) {
     if(line[4].type != IDENTIFIER || line[5].type != COMMA || line[6].type != INT_CONST || line[7].type != COMMA || line[8].type != INT_CONST || line[9].type != PARENTHESIS_CLOSE || line[10].type != NO_TYPE){
       raiseError("Invalid function assignment!");
@@ -584,24 +542,18 @@ void parseFunctionAssignment(Token *line) {
 }
 
 void parseArithmeticAssignment(Token *line) {
-  if (line[0].type != IDENTIFIER) {
-    raiseError("Invalid assignment!");
-  }
-  if (line[3].type != OPERATOR) {
-    raiseError("Invalid assignment!");
-  }
-  if (line[5].type != NO_TYPE) {
-    raiseError("Invalid assignment!");
+  if (line[0].type != IDENTIFIER || line[3].type != OPERATOR || line[5].type != NO_TYPE) {
+    raiseError("Invalid arithmetic assignment!");
   }
   Variable *variable1 = getVariable(line[0].lexeme);
   if(variable1->type == INT) {
     int value1;
     int value2;
     if (line[2].type != INT_CONST && line[2].type != IDENTIFIER) {
-      raiseError("Invalid assignment!");
+      raiseError("Invalid  arithmetic assignment!");
     }
     if (line[4].type != INT_CONST && line[4].type != IDENTIFIER) {
-      raiseError("Invalid assignment!");
+      raiseError("Invalid arithmetic assignment!");
     }
     if (line[2].type == INT_CONST) {
       value1 = strtol(line[2].lexeme, NULL, 10);
@@ -625,7 +577,7 @@ void parseArithmeticAssignment(Token *line) {
         raiseError("The answer cannot be negative!");
       }
     } else {
-      raiseError("Invalid assignment!");
+      raiseError("Invalid arithmetic assignment!");
     }
   }
 
@@ -674,39 +626,39 @@ void parseArithmeticAssignment(Token *line) {
 }
 
 void parseLine(Token *line) {
-  // declaration
+  //DECLARATION
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "new") == 0) {
-    parseDeclaration(line);
+    return parseDeclaration(line);
   }
   //COMMAND OUTPUT
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "output") == 0) {
-    parseOutput(line);
+    return parseOutput(line);
   }
   //COMMAND INPUT
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "input") == 0) {
-    parseInput(line);
+    return parseInput(line);
   }
   //COMMAND READ
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "read") == 0) {
-    parseRead(line);
+    return parseRead(line);
   }
   //COMMAND WRITE
   if (line[0].type == KEYWORD && strcmp(line[0].lexeme, "write") == 0) {
-    parseWrite(line);
+    return parseWrite(line);
   }
-
   //ASSIGNMENT
   if (line[1].type == OPERATOR && strcmp(line[1].lexeme, "=") == 0) {
     if(line[3].type == NO_TYPE) {
-      parseAssignment(line);
+      return parseAssignment(line);
     } else if(line[2].type == KEYWORD && line[3].type == PARENTHESIS_OPEN){
-      parseFunctionAssignment(line);
+      return parseFunctionAssignment(line);
     } else if(line[3].type == OPERATOR && line[5].type == NO_TYPE) {
-      parseArithmeticAssignment(line);
+      return parseArithmeticAssignment(line);
     } else {
       raiseError("Invalid assignment!");
     }
   }
+  raiseError("Unknown line!");
 }
 
 int main(int argc, char *argv[]) {
