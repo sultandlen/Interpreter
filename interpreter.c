@@ -560,12 +560,18 @@ void parseArithmeticAssignment(Token *line) {
       value1 = strtol(line[2].lexeme, NULL, 10);
     } else {
       Variable *variable2 = getVariable(line[2].lexeme);
+      if (variable2->type != INT) {
+        raiseError("Invalid arithmetic assignment!");
+      }
       value1 = strtol(variable2->value, NULL, 10);
     }
     if (line[4].type == INT_CONST) {
       value2 = strtol(line[4].lexeme, NULL, 10);
     } else {
       Variable *variable2 = getVariable(line[4].lexeme);
+      if (variable2->type != INT) {
+        raiseError("Invalid arithmetic assignment!");
+      }
       value2 = strtol(variable2->value, NULL, 10);
     }
     if (strcmp(line[3].lexeme, "+") == 0) {
@@ -595,12 +601,18 @@ void parseArithmeticAssignment(Token *line) {
       value1 = line[2].lexeme;
     } else {
       Variable *variable2 = getVariable(line[2].lexeme);
+      if (variable2->type != TEXT) {
+        raiseError("Invalid arithmetic assignment!");
+      }
       value1 = variable2->value;
     }
     if (line[4].type == STR_CONST) {
       value2 = line[4].lexeme;
     } else {
       Variable *variable2 = getVariable(line[4].lexeme);
+      if (variable2->type != TEXT) {
+        raiseError("Invalid arithmetic assignment!");
+      }
       value2 = variable2->value;
     }
     if (strcmp(line[3].lexeme, "+") == 0) {
