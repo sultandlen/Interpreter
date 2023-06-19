@@ -592,10 +592,10 @@ void parseArithmeticAssignment(Token *line) {
     char *value1;
     char *value2;
     if (line[2].type != STR_CONST && line[2].type != IDENTIFIER) {
-      raiseError("Invalid assignment!");
+      raiseError("Invalid arithmetic assignment!");
     }
     if (line[4].type != STR_CONST && line[4].type != IDENTIFIER) {
-      raiseError("Invalid assignment!");
+      raiseError("Invalid arithmetic assignment!");
     }
     if (line[2].type == STR_CONST) {
       value1 = line[2].lexeme;
@@ -633,7 +633,7 @@ void parseArithmeticAssignment(Token *line) {
         strcpy(variable1->value, value1);
       }
     } else {
-      raiseError("Invalid assignment!");
+      raiseError("Invalid arithmetic assignment!");
     }
   }
 }
