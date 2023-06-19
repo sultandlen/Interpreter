@@ -380,6 +380,26 @@ char* subsFunc(char *string, int start, int end) {
   return substring;
 }
 
+int locateFunc(const char* bigText, const char* smallText, int start) {
+  int bigLen = strlen(bigText);
+  int smallLen = strlen(smallText);
+  if (start < 0 || start >= bigLen) {
+    return 0;  // Invalid start position
+  }
+  int i, j;
+  for (i = start; i <= bigLen - smallLen; i++) {
+    for (j = 0; j < smallLen; j++) {
+      if (bigText[i + j] != smallText[j]) {
+        break;  // Mismatch, move to the next position in bigText
+      }
+    }
+    if (j == smallLen) {
+      return i;  // Found smallText at position i
+    }
+  }
+  return 0;  // smallText not found
+}
+
 void parseFunctionAssignment(Token *line) {
 
   if(strcmp(line[2].lexeme, "size") == 0){
@@ -424,7 +444,28 @@ void parseFunctionAssignment(Token *line) {
     }
     variable2->value = calloc(strlen(substring) + 1, sizeof(char));
     strcpy(variable2->value, substring);
-
+  } else if (strcmp(line[2].lexeme, "locate") == 0) {
+    if(line[4].type != IDENTIFIER || line[5].type != COMMA || line[6].type != IDENTIFIER || line[7].type != COMMA || line[8].type != INT_CONST || line[9].type != PARENTHESIS_CLOSE || line[10].type != NO_TYPE){
+      raiseError("Invalid function assignment!");
+    }
+    Variable *variable = getVariable(line[4].lexeme);
+    if(variable->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *bigText = variable->value;
+    Variable *variable2 = getVariable(line[6].lexeme);
+    if(variable2->type != TEXT){
+      raiseError("Invalid function assignment!");
+    }
+    char *smallText = variable2->value;
+    int start = (int) strtol(line[8].lexeme, NULL, 10);
+    int location = locateFunc(bigText, smallText, start);
+    Variable *variable3 = getVariable(line[0].lexeme);
+    if(variable3->type != INT){
+      raiseError("Invalid function assignment!");
+    }
+    variable3->value = calloc(10, sizeof(char));
+    sprintf(variable3->value, "%d", location);
   }
 }
 
