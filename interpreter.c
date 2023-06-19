@@ -470,7 +470,51 @@ void parseFunctionAssignment(Token *line) {
 }
 
 void parseArithmeticAssignment(Token *line) {
-  printf("arithmetic assignment\n");
+  if (line[0].type != IDENTIFIER) {
+    raiseError("Invalid assignment!");
+  }
+  if (line[3].type != OPERATOR) {
+    raiseError("Invalid assignment!");
+  }
+  if (line[5].type != NO_TYPE) {
+    raiseError("Invalid assignment!");
+  }
+  Variable *variable1 = getVariable(line[0].lexeme);
+  int value1;
+  int value2;
+  if(variable1->type == INT) {
+    if (line[2].type != INT_CONST && line[2].type != IDENTIFIER) {
+      raiseError("Invalid assignment!");
+    }
+    if (line[4].type != INT_CONST && line[4].type != IDENTIFIER) {
+      raiseError("Invalid assignment!");
+    }
+    if (line[2].type == INT_CONST) {
+      value1 = strtol(line[2].lexeme, NULL, 10);
+    } else {
+      Variable *variable2 = getVariable(line[2].lexeme);
+      value1 = strtol(variable2->value, NULL, 10);
+    }
+    if (line[4].type == INT_CONST) {
+      value2 = strtol(line[4].lexeme, NULL, 10);
+    } else {
+      Variable *variable2 = getVariable(line[4].lexeme);
+      value2 = strtol(variable2->value, NULL, 10);
+    }
+    if (strcmp(line[3].lexeme, "+") == 0) {
+      variable1->value = calloc(10, sizeof(char));
+      sprintf(variable1->value, "%d", value1 + value2);
+    } else if (strcmp(line[3].lexeme, "-") == 0) {
+      variable1->value = calloc(10, sizeof(char));
+      sprintf(variable1->value, "%d", value1 - value2);
+      if (value1 - value2 < 0) {
+        raiseError("The answer cannot be negative!");
+      }
+    } else {
+      raiseError("Invalid assignment!");
+    }
+  }
+
 }
 
 void parseLine(Token *line) {
